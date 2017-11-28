@@ -2,13 +2,17 @@
 
 # Setup links from dotfile templated in the dotfiles directory
 
-for $f in bashrc profile
+here=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+cd "${HOME}"
+for f in bashrc profile
 do
-    ln -fhs "${f}" "~/.${f}"
+    ln -fns "${here}/${f}" ".${f}"
 done
 
-mkdir -p ~/bin
-for f in bin/*
+mkdir -p bin
+cd bin
+for f in ${here}/bin/*
 do
-    ln -fhs "${f}" "~/bin/${f}"
+    ln -fns "${f}" "$(basename ${f})"
 done
