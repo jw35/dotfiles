@@ -1,0 +1,191 @@
+#!/usr/bin/perl
+
+# A little script to geolocate IP addresses.  Expects either one or
+# more addresses as command line arguments, or a series of addresses
+# on stdin (one line per address). Output is one line per successfully
+# located address with comma-seperated fields: Address, University (Y
+# or N), Country Code, Country name, Region, City, Latitude,
+# Longitude. Some fields may be empty.
+#
+# The script needs access to a copy of MaxMind's GeoLite2 City
+# database (http://dev.maxmind.com/geoip/geoip2/geolite2/). This can
+# selected using the '--db' comamnd line arguement, failing that with
+# the DB environmant variable, and failing that will be looked for as
+# /usr/share/GeoIP/GeoLite2-City.mmdb. The GeoLite2 databases are
+# distributed under the Creative Commons Attribution-ShareAlike 3.0
+# Unported License. The attribution requirement may be met by
+# including the following in all advertising and documentation
+# mentioning features of or use of this database: "This product
+# includes GeoLite2 data created by MaxMind, available from <a
+# href="http://www.maxmind.com">http://www.maxmind.com</a>."
+#
+# This script needs the Perl modules GeoIP2 and Net::CIDR installed.
+
+use constant DATABASE => '/usr/local/var/GeoIP/GeoLite2-City.mmdb';
+use constant ENVVAR   => 'DB';
+
+use warnings;
+use strict;
+
+$| = 1;
+
+use GeoIP2::Database::Reader;
+use Net::CIDR 'cidrlookup';
+use Encode;
+use Getopt::Long;
+
+# See http://www.ucs.cam.ac.uk/network/infoinstitutions/ip/cam-ip-ranges
+# Revised 2016-01
+my @CUDN_PUBLIC =  ('128.232.0.0/16',   '129.169.0.0/16',
+                    '131.111.0.0/16',   '192.18.195.0/24',
+                    '193.60.80.0/20',   '193.63.252.0/23',
+                    '192.84.5.0/24',    '192.153.213.0/24',
+                );
+my @CUDN_PRIVATE = ('10.128.0.0/9',     '172.16.0.0/13',    
+                    '172.24.0.0/14',    '172.28.0.0/15',
+                    '172.30.0.0/16',
+                );
+
+my $CUDN_V6 = '2001:630:210::/44';
+
+# argument parsing
+my ($db);
+GetOptions ("db=s" => \$db);
+$db = $db || $ENV{ENVVAR} || DATABASE;
+
+# Build representations of the CUDN
+my @cudn_addrs4 = ();
+@cudn_addrs4 = Net::CIDR::cidradd($_,@cudn_addrs4)
+    foreach (@CUDN_PUBLIC,@CUDN_PRIVATE);
+my @cudn_addrs6 = Net::CIDR::cidr2range($CUDN_V6);
+my @private_addrs = ();
+@private_addrs = Net::CIDR::cidradd($_,@private_addrs)
+    foreach (@CUDN_PRIVATE);
+
+# Prepair Geo::IP
+my $gilocation = GeoIP2::Database::Reader->new(file => $db);
+die ("(use --db <file> or the " . ENVVAR . " envorinment variable " .
+     "to select a different database)\n") unless $gilocation;
+
+# We either read IP addresses from the command line, or from STDIN
+if (@ARGV) {
+    foreach my $address (@ARGV) {
+        lookup($address);
+    }
+}
+else {
+    while (my $address = <>) {
+        chomp($address);
+        $address =~ s/^\s*(.*?)\s*$/$1/;
+        lookup($address);
+    }
+}
+
+# --- #
+
+sub lookup {
+
+    my ($address) = @_;
+
+    chomp($address);
+
+    return unless $address;
+
+    if ($address !~ /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/ and
+        $address !~ /[0-9a-fA-F:]+/) {
+        warn "'$address' does not look like a valid IP address\n";
+        return;
+    }
+
+    my @results;
+    unless (@results = country_name($address)) {
+        warn "Failed to geolocate '$address'\n";
+        return;
+    }
+    my ($cc,$country,$region,$city,$lat,$long) = @results;
+
+    ($country,$region,$city) =
+      map { Encode::decode('iso-8859-1', $_) }
+        ($country,$region,$city);
+
+    my $internal = internal($address) ? 'Y' : 'N';
+    print join ",", $address, $internal, $cc, $country, 
+        $region, $city, $lat, $long;
+    print "\n";
+
+}
+
+# --- #
+
+sub country_name {
+
+    my ($address) = @_;
+
+    # CUDN-wide private addresses are inside the University
+    if (private($address)) {
+        return ('GB',
+                'United Kingdom',
+                'Cambridgeshire',
+                'Cambridge',
+                52.2,
+                0.1167);
+    }
+
+    my $city;
+    eval {
+	$city = $gilocation->city(ip => $address);
+    };
+    if ($@) {
+	return;
+    }
+    return unless ($city);
+
+    return ($city->country()->iso_code()               || '',
+            $city->country()->name()                   || '',
+            $city->most_specific_subdivision()->name() || '',
+            $city->city()->name()                      || '',
+            $city->location()->latitude(),
+            $city->location()->longitude());
+
+}
+
+# --- #
+
+sub internal {
+
+  my ($client) = @_;
+
+  if ($client =~ /:/) {
+      if (cidrlookup($client,@cudn_addrs6)) {
+	  return 1;
+      }
+  }
+  else {
+      if (cidrlookup($client,@cudn_addrs4)) {
+	  return 1;
+      }
+  }
+
+  return 0;
+
+}
+
+# --- #
+
+sub private {
+
+  my ($client) = @_;
+
+  if ($client =~ /:/) {
+      return 0;  # No IPv6 private addresses
+  }
+  elsif (cidrlookup($client,@private_addrs)) {
+      return 1;
+  }
+  else {
+      return 0;
+  }
+
+}
+
+

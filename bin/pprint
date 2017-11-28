@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# PrettyPrint various filetypes to stdout based on filename suffix
+# Fall back to 'cat' for unrecognised types.
+
+for filename in "$@"
+do
+
+    if [ ! -e "${filename}" ]
+    then
+        echo "${filename}: not found" >&2
+    exit 1
+    fi
+
+    if [ ! -r "${filename}" ]
+    then
+        echo "${filename}: found but unreadable" >&2
+    exit 1
+    fi
+
+    ext="${filename##*.}"
+
+    case $ext in
+        'xml')
+            xmllint --format "${filename}"
+            ;;
+        'json')
+            python -m json.tool "${filename}"
+            ;;
+        '*')
+            echo "${filename}: unreconised file type - using cat" >&2
+            cat "${filename}"
+            ;;
+    esac
+
+done
