@@ -5,7 +5,7 @@
 here=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 cd "${HOME}"
-for f in bashrc profile gitconfig
+for f in bashrc profile gitconfig psqlrc
 do
     ln -fns "${here}/${f}" ".${f}"
 done
