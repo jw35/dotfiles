@@ -1,0 +1,40 @@
+Host mnementh mnementh.csi.cam.ac.uk
+  Hostname mnementh.csi.cam.ac.uk
+  ForwardAgent yes   
+
+Host aivas aivas.dyndns.org
+  Hostname aivas.dyndns.org
+  User jon
+  ForwardAgent yes
+
+Host sphinx sphinx.mythic-beasts.com
+  HostName sphinx.mythic-beasts.com
+  User jonw
+
+Host *.mythic-beasts.com
+  User jonw
+
+Host tfc-app?
+  Hostname %h.cl.cam.ac.uk
+  ForwardAgent yes
+
+Host *
+  ForwardX11 no
+  ForwardX11Trusted no
+  RhostsAuthentication no
+  RhostsRSAAuthentication no
+  RSAAuthentication no
+  PasswordAuthentication yes
+  FallBackToRsh no
+  UseRsh no
+  Protocol 2
+  UseKeychain no
+  AddKeysToAgent Yes
+  # Added by Kryptonite
+  PKCS11Provider /usr/local/lib/kr-pkcs11.so
+  ProxyCommand /usr/local/bin/krssh %h %p
+  IdentityFile ~/.ssh/id_kryptonite
+  #IdentityFile ~/.ssh/id_ed25519
+  IdentityFile ~/.ssh/id_rsa
+  #IdentityFile ~/.ssh/id_ecdsa
+  #IdentityFile ~/.ssh/id_dsa

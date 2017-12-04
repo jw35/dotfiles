@@ -16,3 +16,11 @@ for f in ${here}/bin/*
 do
     ln -fns "${f}" "$(basename ${f})"
 done
+
+mkdir -p .ssh
+cd .ssh
+for f in ${here}/ssh/*
+do
+    ln -fns "${f}" "$(basename ${f})"
+    chmod u=rw,go= "${f}"
+done
