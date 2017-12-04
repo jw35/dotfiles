@@ -1,0 +1,65 @@
+#!/usr/bin/perl
+
+# Script to parse the saved output from the Firefox LiveHTTPHeaders
+# extension and sumarise it down to the requested URL, the HTTP request,
+# the HTTP response, and (for redirections) the value of the 'Location:'
+# response header.
+#
+# Reads either files listed on the command line or STDIN. Output to STDOUT.
+
+use warnings;
+use strict;
+
+use constant SEPERATOR => 0;
+use constant URL       => 1;
+use constant REQUEST   => 2;
+use constant RESPONSE  => 3;
+use constant LOCATION  => 4;
+
+my $looking_for = URL;
+
+while (<>) {
+
+  if ($looking_for == SEPERATOR and /^------------/) {
+    $looking_for = URL;
+  } 
+
+  elsif ($looking_for == URL) {
+    if (/^------------/) {
+      # Looks like file started with a seperator - ignore
+    }
+    else {
+      print;
+      $looking_for = REQUEST;
+    }
+  }
+
+  elsif ($looking_for == REQUEST and /^(GET|POST)/) {
+    print "--> ";
+    print;
+    $looking_for = RESPONSE;
+  }
+
+  elsif ($looking_for == RESPONSE and /^HTTP\//) {
+    my ($proto,$code,$text)  = split; 
+    print "--> ";
+    print;
+    if ($code == 301 or 
+        $code == 302 or $code == 303 or 
+        $code == 307 or $code == 308) {
+      $looking_for = LOCATION;
+    }
+    else {
+      print "\n";
+      $looking_for = SEPERATOR;
+    }
+  }
+
+  elsif ($looking_for == LOCATION and /^Location:/) {
+    print "--> "; 
+    print;
+    print "\n";
+    $looking_for = SEPERATOR;
+  }
+
+}

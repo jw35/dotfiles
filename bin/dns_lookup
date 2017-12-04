@@ -1,0 +1,122 @@
+#!/usr/bin/perl
+
+use strict;
+
+require Net::DNS;
+
+unless ($ARGV[0]) {
+    print "Usage: whatis <domain-name>\n";
+    exit(1)
+    }
+
+do_lookup ($ARGV[0],'',0,1);
+
+
+sub do_lookup {
+
+    my ($name, $address, $indent, $mx_ok) = @_;
+
+    my ($res, $result, $rr, $new_address, $new_name, $found_cname, $found_a);
+    my ($found_mx, $pref); 
+
+    die "Crazy level of indirection: $indent\n" if $indent > 20;
+
+    $found_cname = $found_a = 0;
+
+    $res = Net::DNS::Resolver->new();
+
+# try for CNAMES
+
+    $result = $res->search($name,'CNAME');
+    if ($result) {
+	foreach $rr ($result->answer) {
+	    next unless $rr->type eq 'CNAME';
+	    ++$found_cname;
+            $new_name = $rr->cname;
+            do_indent($indent);
+	    print "$name is a cname for $new_name\n";
+            do_lookup ($new_name,$address,$indent+1,0);
+	}
+        return;
+    }
+
+# if we didn't find CNAME records, try for A records
+
+    $result = $res->search($name,'A');
+    if ($result) {
+	foreach $rr ($result->answer) {
+	    next unless $rr->type eq 'A';
+	    ++$found_a;
+	    $new_address = $rr->address;
+            do_indent($indent);
+	    print "$name has address $new_address\n";
+            check_reverse ($new_address,$name,$indent+1) 
+                                           unless $address eq $new_address;
+	}
+    }
+
+# ...  and MX records
+
+    if ($mx_ok) {
+        $result = $res->search($name,'MX');
+        if ($result) {
+	    foreach $rr ($result->answer) {
+	        next unless $rr->type eq 'MX';
+	        ++$found_mx;
+	        $new_name = $rr->exchange;
+                $pref = $rr->preference;
+                do_indent($indent);
+	        print "$name sends mail to $new_name with preference $pref\n";
+                do_lookup ($new_name,$address,$indent+1,0); 
+ 	    }
+       	}
+    }
+
+
+
+    unless ($found_cname || $found_a || $found_mx) {
+        print "No DNS records found for $name\n";  
+    }
+
+}
+
+
+sub check_reverse {
+
+    my ($address,$name,$indent) = @_;
+
+    my ($res, $result, $rr, $new_name, $found_ptr);
+
+    die "Crazy level of indirection: $indent\n" if $indent > 20;
+
+    $res = Net::DNS::Resolver->new();
+
+    $result = $res->search($address,'PTR');
+    if ($result) {
+	foreach $rr ($result->answer) {
+	    next unless $rr->type eq 'PTR';
+	    ++$found_ptr;
+	    $new_name = $rr->ptrdname;
+	    do_indent($indent);
+	    print "$address corresponds to $new_name\n";
+            do_lookup ($new_name,$address,$indent+1,0) 
+                                              unless $name eq $new_name;
+	}
+    }
+
+}
+
+sub do_indent {
+
+    my ($howmuch) = @_;
+
+    print ' ' x ($howmuch*4);
+
+}
+ 
+
+ 
+
+
+
+
