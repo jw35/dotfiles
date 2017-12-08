@@ -9,7 +9,11 @@ for f in bashrc profile gitconfig psqlrc
 do
     ln -fns "${here}/${f}" ".${f}"
 done
-
+# Move .bash_profile out of the way if present
+if [[ -e .bash_profile ]]
+then
+    mv .bash_profile bash_profile_OFF
+fi
 mkdir -p bin
 cd bin
 for f in ${here}/bin/*
