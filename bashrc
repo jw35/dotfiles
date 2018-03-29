@@ -13,6 +13,12 @@ fitterm(){ cut -c 1-$( tput cols ); }
 # Autocomlete and prompt for Bash
 [[ -f "$HOME/bin/git-completion.bash" ]] && source "$HOME/bin/git-completion.bash"
 [[ -f "$HOME/bin/git-prompt.sh" ]] && source "$HOME/bin/git-prompt.sh"
+
+# Autocomlete for docker and docker-compose
+[[ -f "$HOME/bin/docker-completion.bash" ]] && source "$HOME/bin/docker-completion.bash"
+[[ -f "$HOME/bin/docker-compose-completion.bash" ]] && source "$HOME/bin/docker-compose-completion.bash"
+[[ -f "$HOME/bin/docker-machine-completion.bash" ]] && source "$HOME/bin/docker-machine-completion.bash"
+
 PROMPT_COMMAND='__git_ps1 "\u@\h:\w" "\\\$ "'
 GIT_PS1_SHOWDIRTYSTATE='yes'
 GIT_PS1_SHOWSTASHSTATE='yes'
