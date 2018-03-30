@@ -1,6 +1,7 @@
 Host mnementh mnementh.csi.cam.ac.uk
   Hostname mnementh.csi.cam.ac.uk
-  ForwardAgent yes   
+  ForwardAgent yes
+  User jw35
 
 Host aivas aivas.dyndns.org
   Hostname aivas.dyndns.org
@@ -17,8 +18,10 @@ Host *.mythic-beasts.com
 Host tfc-app?
   Hostname %h.cl.cam.ac.uk
   ForwardAgent yes
+  User jw35
 
 Host *
+  User jw35
   ForwardX11 no
   ForwardX11Trusted no
   RhostsAuthentication no
