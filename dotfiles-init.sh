@@ -14,6 +14,8 @@ if [[ -e .bash_profile ]]
 then
     mv .bash_profile bash_profile_OFF
 fi
+
+cd "${HOME}"
 mkdir -p bin
 cd bin
 for f in ${here}/bin/*
@@ -21,10 +23,11 @@ do
     ln -fns "${f}" "$(basename ${f})"
 done
 
+cd "${HOME}"
 mkdir -p .ssh
 cd .ssh
-for f in ${here}/ssh/*
-do
-    ln -fns "${f}" "$(basename ${f})"
-    chmod u=rw,go= "${f}"
-done
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    ln -fns "${here}/ssh/config-macos" "config"
+else
+    ln -fns "${here}/ssh/config" "config"
+fi

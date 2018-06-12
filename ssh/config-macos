@@ -1,4 +1,3 @@
-
 Host mnementh mnementh.csi.cam.ac.uk
   Hostname mnementh.csi.cam.ac.uk
   ForwardAgent yes   
@@ -29,4 +28,13 @@ Host *
   FallBackToRsh no
   UseRsh no
   Protocol 2
+  UseKeychain no
   AddKeysToAgent Yes
+  # Added by Kryptonite
+  PKCS11Provider /usr/local/lib/kr-pkcs11.so
+  ProxyCommand /usr/local/bin/krssh %h %p
+  IdentityFile ~/.ssh/id_kryptonite
+  #IdentityFile ~/.ssh/id_ed25519
+  IdentityFile ~/.ssh/id_rsa
+  #IdentityFile ~/.ssh/id_ecdsa
+  #IdentityFile ~/.ssh/id_dsa
