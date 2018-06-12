@@ -31,8 +31,8 @@ rm -rf .ssh
 cd "${HOME}"
 mkdir -p .ssh
 cd .ssh
-for f in ${here}/ssh/*
-do
-    ln -fns "${f}" "$(basename ${f})"
-    chmod u=rw,go= "${f}"
-done
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    ln -fns "${here}/ssh/config-macos" "config"
+else
+    ln -fns "${here}/ssh/config" "config"
+fi

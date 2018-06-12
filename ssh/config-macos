@@ -1,8 +1,6 @@
-
 Host mnementh mnementh.csi.cam.ac.uk
   Hostname mnementh.csi.cam.ac.uk
-  ForwardAgent yes
-  User jw35
+  ForwardAgent yes   
 
 Host aivas aivas.dyndns.org
   Hostname aivas.dyndns.org
@@ -19,15 +17,24 @@ Host *.mythic-beasts.com
 Host tfc-app?
   Hostname %h.cl.cam.ac.uk
   ForwardAgent yes
-  User jw35
 
 Host *
-  User jw35
   ForwardX11 no
   ForwardX11Trusted no
   RhostsAuthentication no
+  RhostsRSAAuthentication no
+  RSAAuthentication no
   PasswordAuthentication yes
   FallBackToRsh no
   UseRsh no
   Protocol 2
+  UseKeychain no
   AddKeysToAgent Yes
+  # Added by Krypton
+  PKCS11Provider /usr/local/lib/kr-pkcs11.so
+  ProxyCommand /usr/local/bin/krssh %h %p
+  IdentityFile ~/.ssh/id_krypton
+  #IdentityFile ~/.ssh/id_ed25519
+  IdentityFile ~/.ssh/id_rsa
+  #IdentityFile ~/.ssh/id_ecdsa
+  #IdentityFile ~/.ssh/id_dsa
