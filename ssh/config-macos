@@ -22,8 +22,6 @@ Host *
   ForwardX11 no
   ForwardX11Trusted no
   RhostsAuthentication no
-  RhostsRSAAuthentication no
-  RSAAuthentication no
   PasswordAuthentication yes
   FallBackToRsh no
   UseRsh no
