@@ -1,6 +1,9 @@
 Host mnementh mnementh.csi.cam.ac.uk
   Hostname mnementh.csi.cam.ac.uk
-  ForwardAgent yes   
+  ForwardAgent yes
+
+Host ent ent.csi.cam.ac.uk
+  Hostname ent.csi.cam.ac.uk
 
 Host aivas aivas.dyndns.org
   Hostname aivas.dyndns.org
