@@ -36,3 +36,12 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
     ln -fns "${here}/ssh/config" "config"
 fi
+
+# Populate .config directory
+cd "${HOME}"
+mkdir -p .config
+cd .config
+for f in ${here}/config/*
+do
+	ln -fns "${f}" "$(basename ${f})"
+done
