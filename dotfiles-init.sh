@@ -6,7 +6,7 @@ here=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # Copy assorted files into home directory
 cd "${HOME}"
-for f in bashrc profile gitconfig psqlrc
+for f in bashrc profile gitconfig psqlrc eslintrc.js
 do
     ln -fns "${here}/${f}" ".${f}"
 done
