@@ -1,5 +1,10 @@
 [user]
-    email = jw35@cam.ac.uk
-    name = Jon Warbrick
+	email = jw35@cam.ac.uk
+	name = Jon Warbrick
 [push]
 	default = simple
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
