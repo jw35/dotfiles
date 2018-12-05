@@ -1,0 +1,7 @@
+new-blocklevel-tags: ons-navigator, ons-page, ons-toolbar,
+  ons-toolbar-button, ons-list, ons-list-item, ons-icon, ons-back-button,
+  ons-action-sheet, ons-action-sheet-button, ons-alert-dialog
+
+new-empty-tags: 
+
+new-inline-tags: ons-button, ons-alert-dialog-button
