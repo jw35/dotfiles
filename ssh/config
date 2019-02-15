@@ -24,6 +24,12 @@ Host tfc-app?
   ForwardAgent yes
   User jw35
 
+Host tfc-pi1
+  HostName localhost
+  User pi
+  Port 10222
+  ProxyJump tfc-app4.cl.cam.ac.uk
+
 Host *
   User jw35
   ForwardX11 no
