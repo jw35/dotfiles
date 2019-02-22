@@ -31,11 +31,12 @@ rm -rf .ssh
 cd "${HOME}"
 mkdir -p .ssh
 cd .ssh
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    ln -fns "${here}/ssh/config-macos" "config"
-else
-    ln -fns "${here}/ssh/config" "config"
-fi
+ln -fns "${here}/ssh/config" "config"
+#if [[ "$OSTYPE" == "darwin"* ]]; then
+#    Do something on mac machines
+#else
+#    Do something on everything else
+#fi
 
 # Populate .config directory
 cd "${HOME}"
