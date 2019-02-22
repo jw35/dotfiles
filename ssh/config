@@ -27,7 +27,8 @@ Host tfc-pi1
   User pi
   Port 10222
   ForwardAgent yes
-  ProxyJump tfc-app4.cl.cam.ac.uk
+  #ProxyJump tfc-app4.cl.cam.ac.uk
+  ProxyCommand ssh tfc-app4.cl.cam.ac.uk -W %h:%p
 
 Host *
   User jw35
