@@ -34,7 +34,7 @@ Host tfc-app4-tunnel
   Hostname tfc-app4.cl.cam.ac.uk
   Port 22
   User jw35
-  IdentityFile ~/.ssh/tfc-app4.tunnel.key
+  IdentityFile ~/.ssh/tfc-app4-tunnel.key
   RemoteForward 10222 localhost:22
 
 Host *
