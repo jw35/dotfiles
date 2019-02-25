@@ -28,7 +28,14 @@ Host tfc-pi1
   Port 10222
   ForwardAgent yes
   #ProxyJump tfc-app4.cl.cam.ac.uk
-  ProxyCommand ssh tfc-app4.cl.cam.ac.uk -W %h:%p
+  ProxyCommand ssh tfc-app4.cl.cam.ac.uk -W %h:%
+
+Host tfc-app4-tunnel
+  Hostname tfc-app4.cl.cam.ac.uk
+  Port 22
+  User jw35
+  IdentityFile ~/.ssh/tfc-app4.tunnel.key
+  RemoteForward 10222 localhost:22
 
 Host *
   User jw35
