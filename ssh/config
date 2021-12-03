@@ -11,6 +11,11 @@ Host canth
 Host ent ent.csi.cam.ac.uk
   Hostname ent.csi.cam.ac.uk
 
+Host ely ely.cl.cam.ac.uk
+  Hostname ely.cl.cam.ac.uk
+  GSSAPIAuthentication yes
+  GSSAPIDelegateCredentials yes
+
 Host aivas aivas.dyndns.org
   Hostname aivas.dyndns.org
   User jon
