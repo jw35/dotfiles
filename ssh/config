@@ -23,10 +23,12 @@ Host aivas aivas.dyndns.org
 
 Host sphinx sphinx.mythic-beasts.com
   HostName sphinx.mythic-beasts.com
+  ForwardAgent yes
   User jonw
 
 Host caracal caracal.mythic-beasts.com
   HostName caracal.mythic-beasts.com
+  ForwardAgent yes
   User jonw
 
 Host *.mythic-beasts.com
